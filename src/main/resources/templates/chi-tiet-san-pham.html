@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${sanPham.ten} + ' - Clothing Shop'">Chi tiết sản phẩm</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .product-image {
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .product-info {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+        }
+        .price-tag {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #dc3545;
+        }
+        .attribute-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .attribute-item:last-child {
+            border-bottom: none;
+        }
+        .suggested-product {
+            transition: transform 0.3s;
+        }
+        .suggested-product:hover {
+            transform: translateY(-5px);
+        }
+        .quantity-input {
+            width: 80px;
+            text-align: center;
+        }
+        .breadcrumb {
+            background: transparent;
+            padding: 0;
+        }
+        .stock-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/}">
+            <i class="fas fa-tshirt me-2"></i>CLOTHING SHOP
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/}">Trang chủ</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/san-pham}">Sản phẩm</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/gio-hang}">
+                        <i class="fas fa-shopping-cart"></i> Giỏ hàng
+                        <span th:if="${tongSoLuongGioHang > 0}"
+                              class="badge bg-danger ms-1"
+                              th:text="${tongSoLuongGioHang}"></span>
+                    </a>
+                </li>
+            </ul>
+
+            <form th:action="@{/tim-kiem}" method="get" class="d-flex me-3">
+                <input type="text" name="keyword" class="form-control" placeholder="Tìm sản phẩm..." required>
+                <button type="submit" class="btn btn-outline-light ms-2">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</nav>
+
+<!-- Breadcrumb -->
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a th:href="@{/}" class="text-decoration-none">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a th:href="@{/san-pham}" class="text-decoration-none">Sản phẩm</a></li>
+            <li class="breadcrumb-item"><a th:href="@{/danh-muc/{maDM}(maDM=${sanPham.danhMuc.maDM})}"
+                                           class="text-decoration-none" th:text="${sanPham.danhMuc.ten}"></a></li>
+            <li class="breadcrumb-item active" th:text="${sanPham.ten}"></li>
+        </ol>
+    </nav>
+</div>
+
+<!-- Product Details -->
+<div class="container my-5" th:if="${sanPham}">
+    <div class="row">
+        <!-- Product Images -->
+        <div class="col-md-6 mb-4">
+            <div class="card border-0 position-relative">
+                <!-- Stock Status Badge -->
+                <div class="stock-badge">
+                        <span th:if="${sanPham.soLuong == 0}"
+                              class="badge bg-danger">Hết hàng</span>
+                    <span th:if="${sanPham.soLuong > 0 and sanPham.soLuong <= 5}"
+                          class="badge bg-warning">Sắp hết</span>
+                    <span th:if="${sanPham.soLuong > 5}"
+                          class="badge bg-success">Còn hàng</span>
+                </div>
+
+                <img th:src="${sanPham.hinhAnh}"
+                     class="card-img-top product-image"
+                     th:alt="${sanPham.ten}"
+                     style="height: 500px; object-fit: cover;">
+            </div>
+        </div>
+
+        <!-- Product Info -->
+        <div class="col-md-6">
+            <div class="product-info h-100">
+                <h1 class="h2 fw-bold mb-3" th:text="${sanPham.ten}"></h1>
+
+                <!-- Brand -->
+                <div class="mb-3">
+                        <span class="badge bg-primary fs-6" th:if="${sanPham.thuongHieu}"
+                              th:text="${sanPham.thuongHieu.ten}"></span>
+                </div>
+
+                <!-- Price -->
+                <div class="mb-4">
+                        <span class="price-tag"
+                              th:text="'₫' + ${#numbers.formatDecimal(sanPham.gia, 0, 'COMMA', 0, 'POINT')}"></span>
+                </div>
+
+                <!-- Product Attributes -->
+                <div class="mb-4">
+                    <div class="attribute-item">
+                        <strong><i class="fas fa-palette me-2 text-primary"></i>Màu sắc:</strong>
+                        <span class="ms-2" th:text="${sanPham.mauSac}"></span>
+                    </div>
+                    <div class="attribute-item">
+                        <strong><i class="fas fa-ruler me-2 text-primary"></i>Kích cỡ:</strong>
+                        <span class="ms-2" th:text="${sanPham.kichCo}"></span>
+                    </div>
+                    <div class="attribute-item">
+                        <strong><i class="fas fa-weight me-2 text-primary"></i>Chất liệu:</strong>
+                        <span class="ms-2" th:text="${sanPham.chatLieu}"></span>
+                    </div>
+                    <div class="attribute-item">
+                        <strong><i class="fas fa-cube me-2 text-primary"></i>Tình trạng:</strong>
+                        <span th:if="${sanPham.soLuong > 0}" class="text-success">
+                                <i class="fas fa-check-circle me-1"></i>Còn hàng (<span th:text="${sanPham.soLuong}"></span> sản phẩm)
+                            </span>
+                        <span th:if="${sanPham.soLuong == 0}" class="text-danger">
+                                <i class="fas fa-times-circle me-1"></i>Hết hàng
+                            </span>
+                    </div>
+                    <div class="attribute-item">
+                        <strong><i class="fas fa-chart-line me-2 text-primary"></i>Đã bán:</strong>
+                        <span class="ms-2" th:text="${sanPham.daBan} + ' sản phẩm'"></span>
+                    </div>
+                </div>
+
+                <!-- Quantity and Add to Cart -->
+                <div class="mb-4" th:if="${sanPham.soLuong > 0}">
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <label class="form-label"><strong>Số lượng:</strong></label>
+                        </div>
+                        <div class="col-auto">
+                            <div class="input-group">
+                                <button class="btn btn-outline-secondary" type="button" id="decreaseQty">-</button>
+                                <input type="number" class="form-control quantity-input"
+                                       id="quantity" value="1" min="1" th:max="${sanPham.soLuong}">
+                                <button class="btn btn-outline-secondary" type="button" id="increaseQty">+</button>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <small class="text-muted" th:text="'Còn ' + ${sanPham.soLuong} + ' sản phẩm'"></small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="d-grid gap-2 d-md-flex">
+                    <form th:action="@{/them-vao-gio-hang}" method="post" class="d-flex flex-fill me-md-2">
+                        <input type="hidden" name="productId" th:value="${sanPham.maSP}">
+                        <input type="hidden" name="soLuong" id="quantityInput" value="1">
+
+                        <button th:if="${sanPham.soLuong > 0}"
+                                type="submit"
+                                class="btn btn-primary btn-lg w-100">
+                            <i class="fas fa-shopping-cart me-2"></i>Thêm vào giỏ hàng
+                        </button>
+                        <button th:if="${sanPham.soLuong == 0}"
+                                class="btn btn-secondary btn-lg w-100" disabled>
+                            <i class="fas fa-times me-2"></i>Hết hàng
+                        </button>
+                    </form>
+
+                    <button class="btn btn-outline-primary btn-lg flex-fill">
+                        <i class="fas fa-heart me-2"></i>Yêu thích
+                    </button>
+                </div>
+
+                <!-- Success Message -->
+                <div th:if="${param.success}" class="alert alert-success mt-3" role="alert">
+                    <i class="fas fa-check-circle me-2"></i>Đã thêm sản phẩm vào giỏ hàng thành công!
+                </div>
+
+                <!-- Security Notice -->
+                <div class="mt-4 p-3 bg-light rounded">
+                    <div class="d-flex">
+                        <i class="fas fa-shield-alt text-success fa-2x me-3"></i>
+                        <div>
+                            <h6 class="mb-1">Mua sắm an toàn</h6>
+                            <p class="mb-0 small">Sản phẩm chất lượng, đảm bảo chính hãng</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Description -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h4 class="mb-0"><i class="fas fa-file-alt me-2 text-primary"></i>Mô tả sản phẩm</h4>
+                </div>
+                <div class="card-body">
+                    <p class="card-text" th:text="${sanPham.moTa} ?: 'Sản phẩm chất lượng cao, thiết kế thời trang và hiện đại.'"></p>
+
+                    <!-- Additional Features -->
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-check text-success me-2"></i>Đặc điểm nổi bật</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-star text-warning me-2"></i>Chất liệu cao cấp</li>
+                                <li><i class="fas fa-star text-warning me-2"></i>Thiết kế thời trang</li>
+                                <li><i class="fas fa-star text-warning me-2"></i>Đường may tỉ mỉ</li>
+                                <li><i class="fas fa-star text-warning me-2"></i>Form dáng chuẩn</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-truck text-info me-2"></i>Chính sách giao hàng</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-shipping-fast me-2"></i>Miễn phí vận chuyển đơn từ 500K</li>
+                                <li><i class="fas fa-exchange-alt me-2"></i>Đổi trả trong 7 ngày</li>
+                                <li><i class="fas fa-phone me-2"></i>Hỗ trợ 24/7</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Suggested Products -->
+    <div class="row mt-5" th:if="${sanPhamCungDanhMuc != null and sanPhamCungDanhMuc.size() > 0}">
+        <div class="col-12">
+            <h3 class="mb-4">Sản phẩm cùng danh mục</h3>
+            <div class="row">
+                <div th:each="sp : ${sanPhamCungDanhMuc}" class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                    <div class="card suggested-product h-100 position-relative">
+                        <!-- Stock Badge -->
+                        <div class="position-absolute top-0 start-0 m-2">
+                                <span th:if="${sp.soLuong == 0}"
+                                      class="badge bg-danger">Hết hàng</span>
+                            <span th:if="${sp.soLuong > 0 and sp.soLuong <= 5}"
+                                  class="badge bg-warning">Sắp hết</span>
+                        </div>
+
+                        <img th:src="${sp.hinhAnh}" class="card-img-top"
+                             style="height: 200px; object-fit: cover;"
+                             th:alt="${sp.ten}">
+                        <div class="card-body d-flex flex-column">
+                            <h6 class="card-title" th:text="${sp.ten}"></h6>
+                            <p class="card-text text-success fw-bold"
+                               th:text="'₫' + ${#numbers.formatDecimal(sp.gia, 0, 'COMMA', 0, 'POINT')}"></p>
+                            <p class="card-text small text-muted">
+                                <span th:if="${sp.thuongHieu}" th:text="${sp.thuongHieu.ten}"></span>
+                            </p>
+                            <div class="mt-auto">
+                                <div class="d-grid gap-2">
+                                    <a th:href="@{/san-pham/{id}(id=${sp.maSP})}"
+                                       class="btn btn-outline-primary btn-sm">Xem chi tiết</a>
+                                    <form th:action="@{/them-vao-gio-hang}" method="post">
+                                        <input type="hidden" name="productId" th:value="${sp.maSP}">
+                                        <input type="hidden" name="soLuong" value="1">
+                                        <button th:if="${sp.soLuong > 0}"
+                                                type="submit"
+                                                class="btn btn-primary btn-sm w-100">
+                                            <i class="fas fa-cart-plus me-1"></i>Thêm vào giỏ
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="bg-dark text-light py-4 mt-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <h5><i class="fas fa-tshirt me-2"></i>CLOTHING SHOP</h5>
+                <p class="text-muted">Cửa hàng thời trang uy tín, chất lượng với giá cả hợp lý.</p>
+            </div>
+            <div class="col-md-4">
+                <h5>Liên hệ</h5>
+                <p class="text-muted">
+                    <i class="fas fa-map-marker-alt me-2"></i>123 Nguyễn Văn Linh, TP.HCM<br>
+                    <i class="fas fa-phone me-2"></i>0123 456 789<br>
+                    <i class="fas fa-envelope me-2"></i>info@clothingshop.com
+                </p>
+            </div>
+            <div class="col-md-4">
+                <h5>Theo dõi chúng tôi</h5>
+                <div class="d-flex gap-3">
+                    <a href="#" class="text-light"><i class="fab fa-facebook fa-2x"></i></a>
+                    <a href="#" class="text-light"><i class="fab fa-instagram fa-2x"></i></a>
+                    <a href="#" class="text-light"><i class="fab fa-tiktok fa-2x"></i></a>
+                </div>
+            </div>
+        </div>
+        <hr class="my-4">
+        <div class="text-center">
+            <p class="mb-0">&copy; 2025 Clothing Shop. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // Quantity control
+    document.getElementById('decreaseQty').addEventListener('click', function() {
+        const quantityInput = document.getElementById('quantity');
+        let quantity = parseInt(quantityInput.value);
+        if (quantity > 1) {
+            quantityInput.value = quantity - 1;
+            document.getElementById('quantityInput').value = quantityInput.value;
+        }
+    });
+
+    document.getElementById('increaseQty').addEventListener('click', function() {
+        const quantityInput = document.getElementById('quantity');
+        let quantity = parseInt(quantityInput.value);
+        const maxQuantity = parseInt(quantityInput.getAttribute('max'));
+        if (quantity < maxQuantity) {
+            quantityInput.value = quantity + 1;
+            document.getElementById('quantityInput').value = quantityInput.value;
+        }
+    });
+
+    // Update hidden input when quantity changes
+    document.getElementById('quantity').addEventListener('change', function() {
+        document.getElementById('quantityInput').value = this.value;
+    });
+</script>
+</body>
+</html>
