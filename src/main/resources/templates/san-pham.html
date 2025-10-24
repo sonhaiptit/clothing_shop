@@ -26,7 +26,7 @@
         }
     </style>
 </head>
-<body>
+<body style=" background: linear-gradient(to top, #f3e7e9 0%, #e3eeff 99%, #e3eeff 100%);">
 <!-- Navigation -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
     <div class="container">
@@ -70,18 +70,18 @@
     <div class="row">
         <!-- Sidebar -->
         <div class="col-md-3">
-            <div class="card category-sidebar">
+            <div class="card category-sidebar" style="border: solid #dbeafe">
                 <div class="card-header bg-primary text-white">
                     <h5 class="mb-0"><i class="fas fa-list me-2"></i>DANH MỤC</h5>
                 </div>
                 <div class="list-group list-group-flush">
                     <a th:href="@{/san-pham}"
-                       class="list-group-item list-group-item-action">
+                       class="list-group-item list-group-item-action" style="background-color: #eef5ff;">
                         <i class="fas fa-all me-2"></i>Tất cả sản phẩm
                     </a>
                     <a th:each="dm : ${danhMucList}"
                        th:href="@{/danh-muc/{maDM}(maDM=${dm.maDM})}"
-                       class="list-group-item list-group-item-action"
+                       class="list-group-item list-group-item-action" style="background-color: #eef5ff;"
                        th:text="${dm.ten}">
                     </a>
                 </div>
@@ -99,7 +99,7 @@
 
             <div class="row">
                 <div th:each="sp : ${sanPhamList}" class="col-xl-3 col-lg-4 col-md-6 mb-4">
-                    <div class="card product-card h-100">
+                    <div class="card product-card h-100" style="background-color: #eef5ff; border:  solid #dbeafe">
                         <!-- Stock Status Badge -->
                         <div class="position-absolute top-0 start-0 m-2">
                                 <span th:if="${sp.soLuong == 0}"
@@ -166,11 +166,11 @@
         <div class="row">
             <div class="col-md-4">
                 <h5><i class="fas fa-tshirt me-2"></i>CLOTHING SHOP</h5>
-                <p class="text-muted">Cửa hàng thời trang uy tín, chất lượng với giá cả hợp lý.</p>
+                <p Cửa hàng thời trang uy tín, chất lượng với giá cả hợp lý.</p>
             </div>
             <div class="col-md-4">
                 <h5>Liên hệ</h5>
-                <p class="text-muted">
+                <p>
                     <i class="fas fa-map-marker-alt me-2"></i>123 Nguyễn Văn Linh, TP.HCM<br>
                     <i class="fas fa-phone me-2"></i>0123 456 789<br>
                     <i class="fas fa-envelope me-2"></i>info@clothingshop.com
