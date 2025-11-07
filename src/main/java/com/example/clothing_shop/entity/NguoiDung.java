@@ -5,8 +5,10 @@ import lombok.Data;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+
 @Data
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "NguoiDung")
 public class NguoiDung {
     @Id
@@ -26,4 +28,7 @@ public class NguoiDung {
     private String soDienThoai;
 
     private LocalDateTime ngayTao = LocalDateTime.now();
+    @Column(length = 20)
+    private String vaiTro;
+
 }

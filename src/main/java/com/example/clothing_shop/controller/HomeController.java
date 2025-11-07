@@ -25,7 +25,7 @@ public class HomeController {
     private DanhMucService danhMucService;
 
     @Autowired
-    private GioHangService gioHangService; // Thêm dòng này
+    private GioHangService gioHangService;
 
     @GetMapping("/")
     public String home(Model model, HttpSession session) {

@@ -10,7 +10,6 @@ public class ThuongHieu {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long maTH;
-
     private String ten;
     private String logo;
 }
