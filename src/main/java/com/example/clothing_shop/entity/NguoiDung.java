@@ -17,6 +17,7 @@ public class NguoiDung {
 
     @Column(unique = true, nullable = false)
     private String tenDangNhap;
+    private String email;
 
     @Column(nullable = false)
     private String matKhau;
@@ -30,5 +31,12 @@ public class NguoiDung {
     private LocalDateTime ngayTao = LocalDateTime.now();
     @Column(length = 20)
     private String vaiTro;
+    public NguoiDung() {
+        this.ngayTao = LocalDateTime.now();
+    }
+    public NguoiDung(String tenDangNhap, String matKhau) {
+        this.tenDangNhap = tenDangNhap;
+        this.matKhau = matKhau;
+    }
 
 }
