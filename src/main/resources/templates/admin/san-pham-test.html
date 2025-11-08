@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Sản Phẩm</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .debug-info {
+            background-color: #e7f3ff;
+            border: 1px solid #b8daff;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        tr:nth-child(odd) {
+            background-color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 TEST TEMPLATE - DANH SÁCH SẢN PHẨM</h1>
+
+        <!-- DEBUG INFORMATION -->
+        <div class="debug-info">
+            <h3>🔍 THÔNG TIN DEBUG:</h3>
+            <p><strong>Tổng số sản phẩm:</strong> <span th:text="${danhSachSanPham.size()}">0</span></p>
+            <p><strong>Danh sách null?:</strong> <span th:text="${danhSachSanPham == null}">false</span></p>
+            <p><strong>Danh sách rỗng?:</strong> <span th:text="${danhSachSanPham.isEmpty()}">false</span></p>
+        </div>
+
+        <!-- SIMPLE TABLE -->
+        <table>
+            <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Mã SP</th>
+                    <th>Tên Sản Phẩm</th>
+                    <th>Giá</th>
+                    <th>Số Lượng</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- SIMPLE LOOP -->
+                <tr th:each="sp, stat : ${danhSachSanPham}">
+                    <td th:text="${stat.count}">1</td>
+                    <td th:text="${sp.maSP}">ID</td>
+                    <td th:text="${sp.ten}">Tên SP</td>
+                    <td th:text="${sp.gia}">Giá</td>
+                    <td th:text="${sp.soLuong}">Số lượng</td>
+                </tr>
+
+                <!-- EMPTY MESSAGE -->
+                <tr th:if="${danhSachSanPham.isEmpty()}">
+                    <td colspan="5" style="text-align: center; color: #666;">
+                        Không có sản phẩm nào
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div style="margin-top: 20px;">
+            <a href="/admin/san-pham" style="color: #007bff;">← Quay lại trang chính</a>
+        </div>
+    </div>
+
+    <script>
+        // Simple JavaScript debug
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('=== JAVASCRIPT TEST DEBUG ===');
+            const rows = document.querySelectorAll('tbody tr');
+            console.log('Số hàng trong DOM:', rows.length);
+
+            rows.forEach((row, index) => {
+                console.log(`Hàng ${index + 1}: ${row.cells[2] ? row.cells[2].textContent : 'undefined'}`);
+            });
+        });
+    </script>
+</body>
+</html>

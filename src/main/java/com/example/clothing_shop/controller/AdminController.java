@@ -71,7 +71,17 @@ public class AdminController {
 
         baseController.setupLayout(session, model, "Quản lý người dùng", "admin");
         List<NguoiDung> danhSachNguoiDung = nguoiDungService.getAllUsers();
+
+        long soAdmin = danhSachNguoiDung.stream()
+                .filter(nd -> "ADMIN".equals(nd.getVaiTro()))
+                .count();
+        long soKhachHang = danhSachNguoiDung.stream()
+                .filter(nd -> "KHACH_HANG".equals(nd.getVaiTro()))
+                .count();
+
         model.addAttribute("danhSachNguoiDung", danhSachNguoiDung);
+        model.addAttribute("soAdmin", soAdmin);
+        model.addAttribute("soKhachHang", soKhachHang);
 
         return "admin/nguoi-dung";
     }
@@ -206,5 +216,24 @@ public class AdminController {
     @GetMapping("/home")
     public String goToHomePage() {
         return "redirect:/";
+    }
+
+    @GetMapping("/san-pham-test")
+    public String testSanPham(HttpSession session, Model model) {
+        if (!hasAdminPermission(session)) {
+            return "redirect:/access-denied";
+        }
+
+        List<SanPham> danhSachSanPham = sanPhamService.getAllSanPham();
+        model.addAttribute("danhSachSanPham", danhSachSanPham);
+
+        System.out.println("=== TEST DEBUG ===");
+        System.out.println("Tổng sản phẩm: " + danhSachSanPham.size());
+        for (int i = 0; i < Math.min(5, danhSachSanPham.size()); i++) {
+            System.out.println(i + ": " + danhSachSanPham.get(i).getTen());
+        }
+        System.out.println("=== END TEST ===");
+
+        return "admin/san-pham-test";
     }
 }
