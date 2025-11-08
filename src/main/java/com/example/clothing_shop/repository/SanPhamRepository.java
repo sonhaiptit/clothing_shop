@@ -15,4 +15,5 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Long> {
     List<SanPham> findTop8ByOrderByDaBanDesc();
 
     List<SanPham> findBySoLuongGreaterThan(Integer soLuong);
+
 }

@@ -20,8 +20,15 @@ public class DanhMucService {
     public Optional<DanhMuc> getDanhMucById(Long id) {
         return danhMucRepository.findById(id);
     }
+    public long countAllCategories() {
+        return danhMucRepository.count();
+    }
 
-    public DanhMuc saveDanhMuc(DanhMuc danhMuc) {
-        return danhMucRepository.save(danhMuc);
+    public void saveDanhMuc(DanhMuc danhMuc) {
+        danhMucRepository.save(danhMuc);
+    }
+
+    public void deleteDanhMuc(Long id) {
+        danhMucRepository.deleteById(id);
     }
 }

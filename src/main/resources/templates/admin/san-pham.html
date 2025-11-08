@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/admin-layout}">
+<head>
+    <title>Quản lý Sản phẩm - Clothing Shop Admin</title>
+
+    <th:block layout:fragment="head">
+        <style>
+            .product-image-preview {
+                width: 60px;
+                height: 60px;
+                object-fit: cover;
+                border-radius: 8px;
+            }
+            .action-buttons .btn {
+                margin: 2px;
+            }
+            .search-box {
+                border-radius: 25px;
+                border: 2px solid #e9ecef;
+                padding: 10px 20px;
+            }
+            .status-badge {
+                font-size: 0.75rem;
+            }
+            .attribute-badge {
+                font-size: 0.7rem;
+                margin-right: 4px;
+                margin-bottom: 4px;
+            }
+            .filter-card {
+                background: white;
+                border-radius: 10px;
+                padding: 20px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                margin-bottom: 20px;
+            }
+            .table-card {
+                background: white;
+                border-radius: 10px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                margin-bottom: 20px;
+            }
+            .pagination-card {
+                background: white;
+                border-radius: 10px;
+                padding: 20px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+<div layout:fragment="content">
+    <!-- Page Header -->
+    <div class="container-fluid mb-4">
+        <div class="row align-items-center">
+            <div class="col">
+                <h2 class="fw-bold mb-1">Quản lý Sản phẩm</h2>
+                <p class="text-muted mb-0">Quản lý toàn bộ sản phẩm trong hệ thống</p>
+            </div>
+            <div class="col-auto">
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal">
+                    <i class="fas fa-plus me-2"></i>Thêm sản phẩm mới
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="container-fluid mb-4">
+        <div class="row">
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card stat-card border-start border-primary border-4">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <div class="text-xs fw-bold text-primary text-uppercase mb-1">
+                                    Tổng sản phẩm
+                                </div>
+                                <div class="h5 mb-0 fw-bold text-gray-800" th:text="${tongSanPham}">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-tshirt fa-2x text-primary"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card stat-card border-start border-success border-4">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <div class="text-xs fw-bold text-success text-uppercase mb-1">
+                                    Đang bán
+                                </div>
+                                <div class="h5 mb-0 fw-bold text-gray-800" th:text="${sanPhamDangBan}">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-check-circle fa-2x text-success"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card stat-card border-start border-warning border-4">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <div class="text-xs fw-bold text-warning text-uppercase mb-1">
+                                    Hết hàng
+                                </div>
+                                <div class="h5 mb-0 fw-bold text-gray-800" th:text="${sanPhamHetHang}">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-exclamation-triangle fa-2x text-warning"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card stat-card border-start border-info border-4">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <div class="text-xs fw-bold text-info text-uppercase mb-1">
+                                    Tổng đã bán
+                                </div>
+                                <div class="h5 mb-0 fw-bold text-gray-800" th:text="${tongDaBan}">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-shopping-bag fa-2x text-info"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search and Filters -->
+    <div class="container-fluid mb-4">
+        <div class="filter-card">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <div class="input-group">
+                        <input type="text" class="form-control search-box" id="searchInput"
+                               placeholder="Tìm kiếm sản phẩm theo tên, mã, kích cỡ, màu sắc..."
+                               th:value="${searchKeyword}">
+                        <button class="btn btn-primary" type="button" id="searchButton">
+                            <i class="fas fa-search me-1"></i>Tìm kiếm
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="d-flex gap-2 justify-content-end">
+                        <select class="form-select" id="categoryFilter">
+                            <option value="">Tất cả danh mục</option>
+                            <option th:each="dm : ${danhMucList}"
+                                    th:value="${dm.maDM}"
+                                    th:text="${dm.ten}">Danh mục</option>
+                        </select>
+                        <select class="form-select" id="statusFilter">
+                            <option value="">Tất cả trạng thái</option>
+                            <option value="active">Đang bán</option>
+                            <option value="outofstock">Hết hàng</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Products Table -->
+    <div class="container-fluid">
+        <div class="table-card">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-list me-2"></i>Danh sách sản phẩm
+                </h5>
+                <span class="badge bg-primary"
+                      th:text="'Hiển thị: ' + ${startItem} + '-' + ${endItem} + ' của ' + ${totalProducts}">
+                        Hiển thị: 0-0 của 0
+                    </span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                        <tr>
+                            <th width="50">#</th>
+                            <th width="80">Hình ảnh</th>
+                            <th width="100">Mã SP</th>
+                            <th width="200">Tên sản phẩm</th>
+                            <th width="120">Danh mục</th>
+                            <th width="120">Giá</th>
+                            <th width="100">Số lượng</th>
+                            <th width="100">Đã bán</th>
+                            <th width="150">Thuộc tính</th>
+                            <th width="120">Trạng thái</th>
+                            <th width="150">Thao tác</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="sanPham, status : ${danhSachSanPham}"
+                            th:with="globalIndex=${(currentPage - 1) * pageSize + status.index + 1}">
+                            <td th:text="${globalIndex}">1</td>
+                            <td>
+                                <img th:if="${sanPham.hinhAnh != null and sanPham.hinhAnh != ''}"
+                                     th:src="${sanPham.hinhAnh}"
+                                     class="product-image-preview" alt="Product Image">
+                                <img th:unless="${sanPham.hinhAnh != null and sanPham.hinhAnh != ''}"
+                                     src="https://via.placeholder.com/60x60?text=No+Image"
+                                     class="product-image-preview" alt="No Image">
+                            </td>
+                            <td>
+                                <strong th:text="${sanPham.maSP}">Mã SP</strong>
+                            </td>
+                            <td>
+                                <strong th:text="${sanPham.ten}">Tên sản phẩm</strong>
+                                <br>
+                                <small class="text-muted" th:if="${sanPham.moTa}"
+                                       th:text="${#strings.abbreviate(sanPham.moTa, 50)}">Mô tả ngắn</small>
+                            </td>
+                            <td>
+                                        <span th:if="${sanPham.danhMuc != null}"
+                                              th:text="${sanPham.danhMuc.ten}"
+                                              class="badge bg-secondary status-badge">Danh mục</span>
+                                <span th:unless="${sanPham.danhMuc != null}"
+                                      class="badge bg-light text-dark status-badge">Chưa phân loại</span>
+                            </td>
+                            <td>
+                                <strong th:text="${#numbers.formatCurrency(sanPham.gia)}">0 ₫</strong>
+                            </td>
+                            <td>
+                                <span th:text="${sanPham.soLuong}">0</span>
+                            </td>
+                            <td>
+                                <span th:text="${sanPham.daBan != null ? sanPham.daBan : 0}">0</span>
+                            </td>
+                            <td>
+                                <div class="d-flex flex-wrap">
+                                            <span th:if="${sanPham.kichCo}" class="badge bg-info attribute-badge"
+                                                  th:text="'Size: ' + ${sanPham.kichCo}">Size</span>
+                                    <span th:if="${sanPham.mauSac}" class="badge bg-warning text-dark attribute-badge"
+                                          th:text="'Màu: ' + ${sanPham.mauSac}">Màu</span>
+                                    <span th:if="${sanPham.chatLieu}" class="badge bg-light text-dark attribute-badge"
+                                          th:text="'Chất liệu: ' + ${sanPham.chatLieu}">Chất liệu</span>
+                                </div>
+                            </td>
+                            <td>
+                                        <span th:if="${sanPham.soLuong > 0}"
+                                              class="badge bg-success status-badge">Đang bán</span>
+                                <span th:unless="${sanPham.soLuong > 0}"
+                                      class="badge bg-danger status-badge">Hết hàng</span>
+                            </td>
+                            <td class="action-buttons">
+                                <button class="btn btn-sm btn-warning"
+                                        th:onclick="|editProduct(${sanPham.maSP})|">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-info"
+                                        th:onclick="|viewProduct(${sanPham.maSP})|">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger"
+                                        th:onclick="|deleteProduct(${sanPham.maSP}, '${sanPham.ten}')|">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+
+                        <!-- Empty state -->
+                        <tr th:if="${danhSachSanPham == null || danhSachSanPham.isEmpty()}">
+                            <td colspan="11" class="text-center py-4">
+                                <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                                <h5 class="text-muted" th:text="${searchKeyword ? 'Không tìm thấy sản phẩm phù hợp' : 'Chưa có sản phẩm nào'}"></h5>
+                                <p class="text-muted">Hãy thêm sản phẩm mới để bắt đầu kinh doanh</p>
+                                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addProductModal">
+                                    <i class="fas fa-plus me-1"></i>Thêm sản phẩm đầu tiên
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div th:if="${totalPages > 1}" class="pagination-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="text-muted">
+                    Trang <strong th:text="${currentPage}">1</strong> / <strong th:text="${totalPages}">1</strong>
+                </div>
+
+                <nav aria-label="Page navigation">
+                    <ul class="pagination mb-0">
+                        <!-- Previous -->
+                        <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled' : ''">
+                            <a class="page-link" th:href="@{/admin/san-pham(page=${currentPage - 1}, size=${pageSize}, search=${searchKeyword})}">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        </li>
+
+                        <!-- Page numbers -->
+                        <th:block th:each="i : ${#numbers.sequence(1, totalPages)}">
+                            <li class="page-item" th:classappend="${currentPage == i} ? 'active' : ''">
+                                <a class="page-link"
+                                   th:href="@{/admin/san-pham(page=${i}, size=${pageSize}, search=${searchKeyword})}"
+                                   th:text="${i}">1</a>
+                            </li>
+                        </th:block>
+
+                        <!-- Next -->
+                        <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled' : ''">
+                            <a class="page-link" th:href="@{/admin/san-pham(page=${currentPage + 1}, size=${pageSize}, search=${searchKeyword})}">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+
+                <div class="text-muted">
+                    Hiển thị <strong th:text="${pageSize}">10</strong> sản phẩm/trang
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Product Modal -->
+<div class="modal fade" id="addProductModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-plus me-2"></i>Thêm sản phẩm mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form th:action="@{/admin/san-pham/them}" method="post" th:object="${sanPhamMoi}">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Tên sản phẩm <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" th:field="*{ten}"
+                                   placeholder="Nhập tên sản phẩm" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Mã sản phẩm <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" th:field="*{maSP}"
+                                   placeholder="Nhập mã sản phẩm" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Danh mục <span class="text-danger">*</span></label>
+                            <select class="form-select" th:field="*{maDM}" required>
+                                <option value="">Chọn danh mục</option>
+                                <option th:each="danhMuc : ${danhMucList}"
+                                        th:value="${danhMuc.maDM}"
+                                        th:text="${danhMuc.ten}">
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Giá <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" th:field="*{gia}"
+                                   placeholder="Nhập giá" min="0" step="0.01" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Số lượng <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" th:field="*{soLuong}"
+                                   placeholder="Nhập số lượng" min="0" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Hình ảnh URL</label>
+                            <input type="text" class="form-control" th:field="*{hinhAnh}"
+                                   placeholder="https://example.com/image.jpg">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Kích cỡ</label>
+                            <input type="text" class="form-control" th:field="*{kichCo}"
+                                   placeholder="Ví dụ: S, M, L, XL">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Màu sắc</label>
+                            <input type="text" class="form-control" th:field="*{mauSac}"
+                                   placeholder="Ví dụ: Đỏ, Xanh, Đen">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Chất liệu</label>
+                            <input type="text" class="form-control" th:field="*{chatLieu}"
+                                   placeholder="Ví dụ: Cotton, Polyester">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Mô tả</label>
+                        <textarea class="form-control" rows="4" th:field="*{moTa}"
+                                  placeholder="Nhập mô tả chi tiết về sản phẩm"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save me-1"></i>Lưu sản phẩm
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<th:block layout:fragment="scripts">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Search functionality
+            document.getElementById('searchButton').addEventListener('click', function() {
+                performSearch();
+            });
+
+            document.getElementById('searchInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    performSearch();
+                }
+            });
+
+            // Filter functionality
+            document.getElementById('categoryFilter').addEventListener('change', function() {
+                applyFilters();
+            });
+
+            document.getElementById('statusFilter').addEventListener('change', function() {
+                applyFilters();
+            });
+
+            // Set current filter values from URL parameters
+            setCurrentFilters();
+        });
+
+        function setCurrentFilters() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const category = urlParams.get('category');
+            const status = urlParams.get('status');
+
+            if (category) {
+                document.getElementById('categoryFilter').value = category;
+            }
+            if (status) {
+                document.getElementById('statusFilter').value = status;
+            }
+        }
+
+        function performSearch() {
+            const searchTerm = document.getElementById('searchInput').value.trim();
+            const category = document.getElementById('categoryFilter').value;
+            const status = document.getElementById('statusFilter').value;
+
+            let url = '/admin/san-pham?';
+            const params = [];
+
+            if (searchTerm) params.push('search=' + encodeURIComponent(searchTerm));
+            if (category) params.push('category=' + category);
+            if (status) params.push('status=' + status);
+
+            window.location.href = url + params.join('&');
+        }
+
+        function applyFilters() {
+            performSearch();
+        }
+
+        function editProduct(productId) {
+            window.location.href = '/admin/san-pham/sua/' + productId;
+        }
+
+        function viewProduct(productId) {
+            window.location.href = '/admin/san-pham/chi-tiet/' + productId;
+        }
+
+        function deleteProduct(productId, productName) {
+            if (confirm('Bạn có chắc chắn muốn xóa sản phẩm "' + productName + '" không?\nHành động này không thể hoàn tác.')) {
+                fetch('/admin/san-pham/xoa/' + productId, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    }
+                }).then(response => {
+                    if (response.ok) {
+                        showAlert('Thành công! Sản phẩm đã được xóa.', 'success');
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1500);
+                    } else {
+                        showAlert('Lỗi! Không thể xóa sản phẩm.', 'error');
+                    }
+                });
+            }
+        }
+
+        // Quick actions
+        function quickUpdateStock(productId, change) {
+            // Cập nhật số lượng nhanh
+            console.log('Quick update stock for product:', productId, 'change:', change);
+            // Gọi API để cập nhật số lượng
+        }
+
+        function toggleProductStatus(productId, currentStatus) {
+            // Bật/tắt trạng thái sản phẩm
+            console.log('Toggle status for product:', productId, 'current:', currentStatus);
+            // Gọi API để thay đổi trạng thái
+        }
+    </script>
+</th:block>
+</body>
+</html>

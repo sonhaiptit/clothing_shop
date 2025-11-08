@@ -1,7 +1,9 @@
 package com.example.clothing_shop.service;
 
 import com.example.clothing_shop.entity.GioHangItem;
+import com.example.clothing_shop.entity.NguoiDung;
 import com.example.clothing_shop.entity.SanPham;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -68,4 +70,5 @@ public class GioHangService {
         if (gioHang == null) return 0;
         return gioHang.stream().mapToInt(GioHangItem::getSoLuong).sum();
     }
+
 }

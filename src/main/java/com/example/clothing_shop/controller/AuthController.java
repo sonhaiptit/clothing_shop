@@ -43,7 +43,7 @@ public class AuthController {
 
             switch (nguoiDung.getVaiTro()) {
                 case "ADMIN":
-                    return "redirect:/admin";
+                    return "redirect:/admin/dashboard";
                 case "NHANVIEN":
                     return "redirect:/nhan-vien";
                 default:

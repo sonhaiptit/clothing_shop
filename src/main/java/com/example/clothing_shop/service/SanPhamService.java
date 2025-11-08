@@ -32,12 +32,16 @@ public class SanPhamService {
     public List<SanPham> getSanPhamNoiBat() {
         return sanPhamRepository.findTop8ByOrderByDaBanDesc();
     }
+    public long countAllProducts() {
+        return sanPhamRepository.count();
+    }
 
-    public SanPham saveSanPham(SanPham sanPham) {
-        return sanPhamRepository.save(sanPham);
+    public void saveSanPham(SanPham sanPham) {
+        sanPhamRepository.save(sanPham);
     }
 
     public void deleteSanPham(Long id) {
         sanPhamRepository.deleteById(id);
     }
+
 }
