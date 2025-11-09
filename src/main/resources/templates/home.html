@@ -39,7 +39,7 @@
         }
     </style>
 </head>
-<body>
+<body  style="background-image: linear-gradient(to top, #f3e7e9 0%, #e3eeff 99%, #e3eeff 100%);">
 <!-- Navigation -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
     <div class="container">
@@ -81,8 +81,8 @@
 
             <div class="navbar-nav">
                 <!-- Hiển thị khi CHƯA đăng nhập -->
-                <div th:unless="${isLoggedIn}">
-                    <a class="nav-link" th:href="@{/dang-nhap}">
+                <div th:unless="${isLoggedIn}" class="d-flex">
+                    <a class="nav-link me-2" th:href="@{/dang-nhap}">
                         <i class="fas fa-sign-in-alt me-1"></i>Đăng nhập
                     </a>
                     <a class="nav-link" th:href="@{/dang-ky}">
@@ -140,7 +140,7 @@
 
     <div class="row">
         <div th:each="sp : ${sanPhamNoiBat}" class="col-lg-3 col-md-4 col-sm-6 mb-4">
-            <div class="card product-card h-100">
+            <div class="card product-card h-100" style="background-color: #f8f9fa; border: 1px solid #dbeafe">
                 <img th:src="${sp.hinhAnh}" class="card-img-top"
                      style="height: 250px; object-fit: cover;"
                      th:alt="${sp.ten}">
@@ -164,17 +164,17 @@
 </section>
 
 <!-- Categories -->
-<section class="bg-light py-5">
+<section class="bg-light py-5" style=" background: linear-gradient(180deg, #f8f9fb 0%, #e4e7ec 100%);">
     <div class="container">
         <h2 class="text-center fw-bold mb-5">DANH MỤC SẢN PHẨM</h2>
         <div class="row g-4">
             <div th:each="dm : ${danhMucList}" class="col-md-4">
-                <div class="card category-card text-center py-4">
+                <div class="card category-card text-center py-4" style="background: linear-gradient(135deg, #c7d2fe, #e9d5ff); border: 1px solid #e0e7ff;">
                     <div class="card-body">
-                        <i class="fas fa-tshirt fa-3x mb-3"></i>
-                        <h4 class="card-title" th:text="${dm.ten}"></h4>
+                        <i class="fas fa-tshirt fa-3x mb-3" style="color: dodgerblue"></i>
+                        <h4 class="card-title" th:text="${dm.ten}" style="color:dodgerblue"></h4>
                         <a th:href="@{/danh-muc/{maDM}(maDM=${dm.maDM})}"
-                           class="btn btn-light mt-2">Khám phá ngay</a>
+                           class="btn mt-2" style="background-color: dodgerblue; color: white">Khám phá ngay</a>
                     </div>
                 </div>
             </div>
@@ -183,27 +183,27 @@
 </section>
 
 <!-- Footer -->
-<footer class="bg-dark text-light py-4 mt-5">
+<footer class="bg-dark text-light py-4">
     <div class="container">
         <div class="row">
             <div class="col-md-4">
                 <h5><i class="fas fa-tshirt me-2"></i>CLOTHING SHOP</h5>
-                <p class="text-muted">Cửa hàng thời trang uy tín, chất lượng với giá cả hợp lý.</p>
+                <p>Cửa hàng thời trang uy tín, chất lượng với giá cả hợp lý.</p>
             </div>
             <div class="col-md-4">
                 <h5>Liên hệ</h5>
-                <p class="text-muted">
-                    <i class="fas fa-map-marker-alt me-2"></i>123 Nguyễn Văn Linh, TP.HCM<br>
-                    <i class="fas fa-phone me-2"></i>0123 456 789<br>
+                <p>
+                    <i class="fas fa-map-marker-alt me-2"></i> Số 96A Trần Phú, phường Hà Đông, thành phố Hà Nội.<br>
+                    <i class="fas fa-phone me-2"></i>Nhóm 03 OOP<br>
                     <i class="fas fa-envelope me-2"></i>info@clothingshop.com
                 </p>
             </div>
             <div class="col-md-4">
                 <h5>Theo dõi chúng tôi</h5>
                 <div class="d-flex gap-3">
-                    <a href="#" class="text-light"><i class="fab fa-facebook fa-2x"></i></a>
-                    <a href="#" class="text-light"><i class="fab fa-instagram fa-2x"></i></a>
-                    <a href="#" class="text-light"><i class="fab fa-tiktok fa-2x"></i></a>
+                    <a href="https://www.facebook.com/HocvienPTIT" class="text-light"><i class="fab fa-facebook fa-2x"></i></a>
+                    <a href="https://www.instagram.com/ptit_daihoctuxa/" class="text-light"><i class="fab fa-instagram fa-2x"></i></a>
+                    <a href="https://ptit.edu.vn/" class="text-light"><i class="fab fa-tiktok fa-2x"></i></a>
                 </div>
             </div>
         </div>
