@@ -21,8 +21,8 @@ public class DonHang {
     private String diaChi;
 
     private BigDecimal tongTien;
-    private String phuongThucThanhToan; // COD, BANKING
-    private String trangThai; // CHO_XAC_NHAN, DANG_XU_LY, DANG_GIAO, DA_GIAO, DA_HUY
+    private String phuongThucThanhToan;
+    private String trangThai;
 
     private LocalDateTime ngayTao = LocalDateTime.now();
 

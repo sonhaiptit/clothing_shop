@@ -105,6 +105,12 @@
                             <i class="fas fa-tags me-2"></i>Danh mục
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:classappend="${activeMenu == 'don-hang'} ? 'active' : ''"
+                           th:href="@{/admin/don-hang}">
+                            <i class="fas fa-shopping-cart me-2"></i>Đơn hàng
+                        </a>
+                    </li>
                     <li class="nav-item mt-4">
                         <a class="nav-link" th:href="@{/}">
                             <i class="fas fa-home me-2"></i>Về trang chủ

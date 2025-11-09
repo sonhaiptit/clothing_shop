@@ -1,13 +1,7 @@
 package com.example.clothing_shop.controller;
 
-import com.example.clothing_shop.entity.DanhMuc;
-import com.example.clothing_shop.entity.NguoiDung;
-import com.example.clothing_shop.entity.SanPham;
-import com.example.clothing_shop.entity.ThuongHieu;
-import com.example.clothing_shop.service.DanhMucService;
-import com.example.clothing_shop.service.NguoiDungService;
-import com.example.clothing_shop.service.SanPhamService;
-import com.example.clothing_shop.service.ThuongHieuService;
+import com.example.clothing_shop.entity.*;
+import com.example.clothing_shop.service.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +26,8 @@ public class AdminController {
     private BaseController baseController;
     @Autowired
     private ThuongHieuService thuongHieuService;
+    @Autowired
+    private DonHangService donHangService;
 
     private boolean hasAdminPermission(HttpSession session){
         NguoiDung nguoiDung = (NguoiDung) session.getAttribute("nguoidung");
@@ -46,6 +42,7 @@ public class AdminController {
         if (requestURI.contains("/nguoi-dung")) return "nguoi-dung";
         if (requestURI.contains("/san-pham")) return "san-pham";
         if (requestURI.contains("/danh-muc")) return "danh-muc";
+        if (requestURI.contains("/don-hang")) return "don-hang";
         return "dashboard";
     }
 
@@ -236,4 +233,42 @@ public class AdminController {
 
         return "admin/san-pham-test";
     }
+    @GetMapping("/don-hang")
+    public String quanLyDonHang(HttpSession session, Model model) {
+        if (!hasAdminPermission(session)) {
+            return "redirect:/access-denied";
+        }
+
+        baseController.setupLayout(session, model, "Quản lý đơn hàng", "admin");
+
+        List<DonHang> danhSachDonHang = donHangService.getAllDonHangOrderByNgayTaoDesc();
+
+        // Sửa lại các trạng thái cho khớp với database
+        long donHangChoXacNhan = donHangService.countByTrangThai("CHO_XAC_NHAN");
+        long donHangDangGiao = donHangService.countByTrangThai("DANG_GIAO");
+        long donHangHoanThanh = donHangService.countByTrangThai("HOAN_THANH"); // Sửa từ DA_GIAO thành HOAN_THANH
+
+        model.addAttribute("danhSachDonHang", danhSachDonHang);
+        model.addAttribute("donHangChoXacNhan", donHangChoXacNhan);
+        model.addAttribute("donHangDangGiao", donHangDangGiao);
+        model.addAttribute("donHangHoanThanh", donHangHoanThanh); // Sửa tên attribute
+
+        return "admin/don-hang";
+    }
+    @PostMapping("/don-hang/cap-nhat-trang-thai")
+    public String capNhatTrangThaiDonHang(@RequestParam("maDH") Long maDH,
+                                          @RequestParam("trangThai") String trangThai,
+                                          HttpSession session) {
+        if (!hasAdminPermission(session)) {
+            return "redirect:/access-denied";
+        }
+
+        if (maDH == null || trangThai == null || trangThai.isEmpty()) {
+            return "redirect:/admin/don-hang?error=missing-param";
+        }
+
+        donHangService.updateTrangThai(maDH, trangThai);
+        return "redirect:/admin/don-hang?success=true";
+    }
+
 }
